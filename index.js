@@ -15,6 +15,10 @@ function parseAlpha(a) {
   return val;
 }
 
+function parseColorUnit(val) {
+  return val.replace(/_/g, ".");
+}
+
 function parseColorClass(value) {
   // 1. HEX
   if (HEX_REGEX.test(value)) {
@@ -22,49 +26,45 @@ function parseColorClass(value) {
   }
 
   // 2. RGB
-  const rgbMatch = value.match(/^rgb(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})$/i);
+  const rgbMatch = value.match(/^rgb(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)$/i);
   if (rgbMatch) {
-    const r = parseInt(rgbMatch[1], 10);
-    const g = parseInt(rgbMatch[2], 10);
-    const b = parseInt(rgbMatch[3], 10);
-    if (r <= 255 && g <= 255 && b <= 255) {
-      return `rgb(${r}, ${g}, ${b})`;
-    }
+    const r = parseColorUnit(rgbMatch[1]);
+    const g = parseColorUnit(rgbMatch[2]);
+    const b = parseColorUnit(rgbMatch[3]);
+    return `rgb(${r}, ${g}, ${b})`;
   }
 
   // 3. RGBA
-  const rgbaMatch = value.match(/^rgba(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9a-zA-Z._%]+)$/i);
+  const rgbaMatch = value.match(/^rgba(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9a-zA-Z._%]+)$/i);
   if (rgbaMatch) {
-    const r = parseInt(rgbaMatch[1], 10);
-    const g = parseInt(rgbaMatch[2], 10);
-    const b = parseInt(rgbaMatch[3], 10);
+    const r = parseColorUnit(rgbaMatch[1]);
+    const g = parseColorUnit(rgbaMatch[2]);
+    const b = parseColorUnit(rgbaMatch[3]);
     const a = parseAlpha(rgbaMatch[4]);
-    if (r <= 255 && g <= 255 && b <= 255) {
-      return `rgba(${r}, ${g}, ${b}, ${a})`;
-    }
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
   }
 
   // 4. HSL
-  const hslMatch = value.match(/^hsl(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})$/i);
+  const hslMatch = value.match(/^hsl(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)$/i);
   if (hslMatch) {
-    const h = parseInt(hslMatch[1], 10);
-    const s = parseInt(hslMatch[2], 10);
-    const l = parseInt(hslMatch[3], 10);
-    if (h <= 360 && s <= 100 && l <= 100) {
-      return `hsl(${h}, ${s}%, ${l}%)`;
-    }
+    const h = parseColorUnit(hslMatch[1]);
+    let s = parseColorUnit(hslMatch[2]);
+    let l = parseColorUnit(hslMatch[3]);
+    if (/^[0-9.]+(?:%|deg|rad|turn)?$/.test(s) && !s.endsWith("%")) s += "%";
+    if (/^[0-9.]+(?:%|deg|rad|turn)?$/.test(l) && !l.endsWith("%")) l += "%";
+    return `hsl(${h}, ${s}, ${l})`;
   }
 
   // 5. HSLA
-  const hslaMatch = value.match(/^hsla(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9a-zA-Z._%]+)$/i);
+  const hslaMatch = value.match(/^hsla(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9]+(?:[._][0-9]+)?%?)(?:-|_)([0-9a-zA-Z._%]+)$/i);
   if (hslaMatch) {
-    const h = parseInt(hslaMatch[1], 10);
-    const s = parseInt(hslaMatch[2], 10);
-    const l = parseInt(hslaMatch[3], 10);
+    const h = parseColorUnit(hslaMatch[1]);
+    let s = parseColorUnit(hslaMatch[2]);
+    let l = parseColorUnit(hslaMatch[3]);
     const a = parseAlpha(hslaMatch[4]);
-    if (h <= 360 && s <= 100 && l <= 100) {
-      return `hsla(${h}, ${s}%, ${l}%, ${a})`;
-    }
+    if (/^[0-9.]+(?:%|deg|rad|turn)?$/.test(s) && !s.endsWith("%")) s += "%";
+    if (/^[0-9.]+(?:%|deg|rad|turn)?$/.test(l) && !l.endsWith("%")) l += "%";
+    return `hsla(${h}, ${s}, ${l}, ${a})`;
   }
 
   return null;
@@ -167,139 +167,11 @@ function extractHexColorsByType(srcDir) {
   return returnedResult;
 }
 
-const areColorsEqual = (c1, c2) => {
-  if (!c1 || !c2) return false;
-  for (const key of PREFIXES) {
-    const arr1 = c1[key] || [];
-    const arr2 = c2[key] || [];
-    if (arr1.length !== arr2.length) return false;
-    const sorted1 = [...arr1].sort();
-    const sorted2 = [...arr2].sort();
-    if (!sorted1.every((val, index) => val === sorted2[index])) {
-      return false;
-    }
-  }
-  return true;
-};
-
-// Automatic file watcher to monitor HTML and JS files in src directory
-function startWatcher(srcDir, cachePath, inputCssPath) {
-  if (!fs.existsSync(srcDir)) return;
-
-  const watcherKey = `hexColorWatcher_${srcDir}`;
-  if (global[watcherKey]) {
-    try {
-      global[watcherKey].close();
-    } catch (e) {}
-    delete global[watcherKey];
-  }
-
-  let timeoutId = null;
-  const onChange = () => {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      const foundColors = extractHexColorsByType(srcDir);
-      
-      let cachedColors = createDefaultCache();
-      if (fs.existsSync(cachePath)) {
-        try {
-          cachedColors = JSON.parse(fs.readFileSync(cachePath, "utf8"));
-        } catch (e) {}
-      }
-
-      if (!areColorsEqual(foundColors, cachedColors)) {
-        // Update cache
-        try {
-          fs.writeFileSync(cachePath, JSON.stringify(foundColors, null, 2), "utf8");
-        } catch (err) {}
-        
-        // Touch input.css to trigger Tailwind CLI watch build
-        if (fs.existsSync(inputCssPath)) {
-          try {
-            const now = new Date();
-            fs.utimesSync(inputCssPath, now, now);
-          } catch (err) {
-            try {
-              let cssContent = fs.readFileSync(inputCssPath, "utf8");
-              cssContent = cssContent.replace(/\/\*\s*last-update:\s*\d+\s*\*\//g, "");
-              cssContent += `\n/* last-update: ${Date.now()} */`;
-              fs.writeFileSync(inputCssPath, cssContent, "utf8");
-            } catch (e) {
-              console.error("Failed to reload tailwind build in watcher", e);
-            }
-          }
-        }
-      }
-    }, 100);
-  };
-
-  try {
-    const watcher = fs.watch(srcDir, { recursive: true }, (eventType, filename) => {
-      if (filename) {
-        if (hasValidExtension(filename)) {
-          onChange();
-        }
-      } else {
-        onChange();
-      }
-    });
-    if (typeof watcher.unref === "function") {
-      watcher.unref();
-    }
-    global[watcherKey] = watcher;
-  } catch (err) {
-    console.error(`Failed to start hexColor watch utility for ${srcDir}:`, err);
-  }
-}
-
 module.exports = plugin.withOptions(
   function (options = {}) {
     return function ({ matchUtilities }) {
       const srcDir = options.srcDir ? path.resolve(options.srcDir) : path.join(process.cwd(), "src");
-      const cachePath = options.cachePath ? path.resolve(options.cachePath) : path.join(process.cwd(), "colors-cache.json");
-      const inputCssPath = options.inputCssPath ? path.resolve(options.inputCssPath) : path.join(process.cwd(), "src/input.css");
-      
-      // Start watching for changes automatically on load
-      startWatcher(srcDir, cachePath, inputCssPath);
-
       const foundColors = extractHexColorsByType(srcDir);
-
-      // Cache check
-      let cachedColors = createDefaultCache();
-      if (fs.existsSync(cachePath)) {
-        try {
-          cachedColors = JSON.parse(fs.readFileSync(cachePath, "utf8"));
-        } catch (e) {
-          cachedColors = createDefaultCache();
-        }
-      }
-
-      if (!areColorsEqual(foundColors, cachedColors)) {
-        // Update cache
-        try {
-          fs.writeFileSync(cachePath, JSON.stringify(foundColors, null, 2), "utf8");
-        } catch (err) {
-          console.error("Error writing to cachePath:", err);
-        }
-        
-        // In Tailwind v4, we touch src/input.css to trigger a rebuild
-        if (fs.existsSync(inputCssPath)) {
-          try {
-            const now = new Date();
-            fs.utimesSync(inputCssPath, now, now);
-          } catch (err) {
-            // Fallback: update timestamp comment inside CSS file
-            try {
-              let cssContent = fs.readFileSync(inputCssPath, "utf8");
-              cssContent = cssContent.replace(/\/\*\s*last-update:\s*\d+\s*\*\//g, "");
-              cssContent += `\n/* last-update: ${Date.now()} */`;
-              fs.writeFileSync(inputCssPath, cssContent, "utf8");
-            } catch (e) {
-              console.error("Failed to reload tailwind build", e);
-            }
-          }
-        }
-      }
 
       const prefixBuilders = {
         bg: (hex) => ({ 'background-color': hex }),

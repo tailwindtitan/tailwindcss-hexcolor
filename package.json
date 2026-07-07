@@ -28,10 +28,8 @@
   ],
   "files": [
     "index.js",
-    "lib",
     "README.md",
-    "LICENSE",
-    "colors-cache.json"
+    "LICENSE"
   ],
   "scripts": {
     "build": "npx @tailwindcss/cli -i src/input.css -o src/output.css",
