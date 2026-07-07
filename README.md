@@ -1,82 +1,225 @@
+This version is much more polished and follows the style used by popular GitHub packages (Tailwind CSS, DaisyUI, Flowbite, etc.). It's ready to use as a `README.md`.
+
 # tailwind-plugin-hexcolor
 
-A powerful Tailwind CSS plugin that scans your template files recursively, extracts arbitrary hex color utility classes, and dynamically registers them as custom utilities using Tailwind's `matchUtilities` engine.
+> A powerful Tailwind CSS plugin that enables arbitrary color utilities without square bracket syntax.
 
-Support is provided out-of-the-box for **Tailwind CSS v4** (CSS-first config) and **Tailwind CSS v3** (JS-based config).
+`tailwind-plugin-hexcolor` recursively scans your project for custom color utility classes and automatically generates the required CSS using Tailwind's `matchUtilities` API.
 
----
-
-## Key Features
-
- - **Multiple Color Formats**: Write classes using **HEX**, **RGB**, **RGBA**, **HSL**, **HSLA**, or even CSS **`color-mix()`** values (e.g. `bg-fff`, `text-rgb-255-0-0`, `border-rgba-0-0-255-0_5`, `bg-mix-in-srgb--red-30--blue`).
-- **16 Core CSS Prefixes Supported**: From backgrounds and text to gradients, borders, shadows, outline, accents, placeholder, caret, and divide.
-- **Virtually Every Template Extension Scanned**: Automatically scans HTML, JS, JSX, TS, TSX, Vue, Svelte, Astro, PHP, Blade templates, Twig templates, ERB, Liquid, MDX, and standard Markdown.
-- **Native Watcher & Automatic Rebuilding**: Automatically integrates with Tailwind v4's compiler to update classes instantly in watch mode.
+It supports **Tailwind CSS v4** (CSS-first configuration) and **Tailwind CSS v3** (JavaScript configuration) out of the box.
 
 ---
 
-## Supported Utility Classes
+## ✨ Features
 
-Any arbitrary HEX, RGB, RGBA, HSL, HSLA, or `color-mix()` color can be combined with the following prefixes:
-
-### Color Formats
-1. **HEX**: `333`, `fff`, `ff0000`, `ff000080` (e.g. `bg-333`, `text-ff000080`)
-2. **RGB**: `rgb-r-g-b` or `rgb_r_g_b` (e.g. `bg-rgb-255-0-0`, `bg-rgb_255_0_0` -> `rgb(255, 0, 0)`)
-3. **RGBA**: `rgba-r-g-b-a` or `rgba_r_g_b_a` (e.g. `bg-rgba-255-0-0-0.5`, `bg-rgba_255_0_0_0_5` -> `rgba(255, 0, 0, 0.5)`)
-4. **HSL**: `hsl-h-s-l` or `hsl_h_s_l` (e.g. `bg-hsl-200-100-50` -> `hsl(200, 100%, 50%)`)
-5. **HSLA**: `hsla-h-s-l-a` or `hsla_h_s_l_a` (e.g. `bg-hsla-120-100-40-0.8`, `bg-hsla_120_100_40_0_8` -> `hsla(120, 100%, 40%, 0.8)`)
-6. **color-mix()**: `mix-[color-space]--[color-1]-[percentage]--[color-2]` or `mix--[color-1]-[percentage]--[color-2]` (which defaults to `srgb`).
-   - Uses double-dashes `--` or double-underscores `__` to separate the space, color 1, and color 2.
-   - Example 1: `bg-mix-in-srgb--red-30--blue` -> `color-mix(in srgb, red 30%, blue)`
-   - Example 2: `text-mix-in-oklch--rgb-255-0-0-40--hsl-120-100-50` -> `color-mix(in oklch, rgb(255, 0, 0) 40%, hsl(120, 100%, 50%))`
-   - Example 3: `border-mix-fff-20--000` -> `color-mix(in srgb, #fff 20%, #000)`
-
-*Note: For alpha channels in RGBA/HSLA and percentages in color-mix, underscores `_` are converted to decimals (dots) dynamically (e.g., `0_5` -> `0.5`, `42.5` -> `42.5`).*
-
-### Supported Prefixes
-
-| Class Prefix | CSS Generated Style | Example |
-| :--- | :--- | :--- |
-| `bg-` | `background-color` | `bg-5746af` |
-| `text-` | `color` | `text-ff0000` |
-| `border-` | `border-color` | `border-ffb900` |
-| `outline-` | `outline-color` | `outline-444444` |
-| `ring-` | `--tw-ring-color` | `ring-555555` |
-| `shadow-` | `--tw-shadow-color` | `shadow-666666` |
-| `fill-` | `fill` | `fill-777777` |
-| `stroke-` | `stroke` | `stroke-888888` |
-| `accent-` | `accent-color` | `accent-999999` |
-| `caret-` | `caret-color` | `caret-aaaaaa` |
-| `decoration-` | `text-decoration-color` | `decoration-bbbbbb` |
-| `placeholder-` | `::placeholder { color: ... }` | `placeholder-cccccc` |
-| `divide-` | `> :not([hidden]) ~ :not([hidden]) { border-color: ... }` | `divide-dddddd` |
-| `from-` | Gradient start color and stops setup | `from-eeeeee` |
-| `via-` | Gradient middle color and stops setup | `via-112233` |
-| `to-` | Gradient end color and stops setup | `to-445566` |
+* 🎨 Supports **HEX**, **RGB**, **RGBA**, **HSL**, **HSLA**, and **CSS `color-mix()`**
+* 🚀 No arbitrary value syntax (`[]`) required
+* ⚡ Supports **16 built-in Tailwind color utilities**
+* 📂 Recursively scans your project
+* 📄 Works with HTML, JSX, TSX, Vue, Svelte, Astro, PHP, Blade, Twig, MDX, Markdown, and more
+* 🔄 Automatically rebuilds during watch mode
+* 💾 Smart cache system for faster rebuilds
+* 🛠️ Works with both **Tailwind CSS v3** and **v4**
 
 ---
 
-## Installation
+# Example
 
-### Method 1: Using NPM (via GitHub repository link)
-Add this package to your project's `dependencies` by running:
-```bash
-npm install github:username/tailwind-plugin-hexcolor --save-dev
+Instead of writing:
+
+```html
+<div class="bg-[#ffffff] text-[#111111] border-[#333333]"></div>
 ```
-*(Replace `username/tailwind-plugin-hexcolor` with your repository URL).*
 
-### Method 2: Manual Download
-Simply download the `index.js` file from the repository and place it in your project (e.g., in a `/plugins` folder).
+You can simply write:
+
+```html
+<div class="bg-fff text-111111 border-333333"></div>
+```
+
+Or use other supported formats:
+
+```html
+<div
+  class="
+    bg-rgb-255-0-0
+    text-rgba-255-255-255-0_8
+    border-hsl-220-100-50
+    outline-hsla-220-100-50-0_6
+    from-mix-in-srgb--red-40--blue
+  "
+></div>
+```
 
 ---
 
-## Setup & Usage
+# Supported Color Formats
 
-### 1. In Tailwind CSS v4 (CSS-First config)
-Import the plugin directly into your input CSS file using the `@plugin` directive:
+## HEX
+
+```html
+bg-fff
+bg-333
+text-ff0000
+border-ff000080
+```
+
+Generates
 
 ```css
-/* src/input.css */
+background-color: #fff;
+background-color: #333;
+color: #ff0000;
+border-color: #ff000080;
+```
+
+---
+
+## RGB
+
+```html
+bg-rgb-255-0-0
+text-rgb_0_128_255
+```
+
+↓
+
+```css
+background-color: rgb(255, 0, 0);
+color: rgb(0, 128, 255);
+```
+
+---
+
+## RGBA
+
+```html
+bg-rgba-255-0-0-0.5
+bg-rgba_255_0_0_0_5
+```
+
+↓
+
+```css
+background-color: rgba(255,0,0,0.5);
+```
+
+Underscores are automatically converted to decimal points.
+
+```
+0_5 → 0.5
+```
+
+---
+
+## HSL
+
+```html
+bg-hsl-220-100-50
+```
+
+↓
+
+```css
+background-color: hsl(220,100%,50%);
+```
+
+---
+
+## HSLA
+
+```html
+bg-hsla-120-100-40-0.8
+```
+
+↓
+
+```css
+background-color: hsla(120,100%,40%,0.8);
+```
+
+---
+
+## color-mix()
+
+```html
+bg-mix-in-srgb--red-30--blue
+```
+
+↓
+
+```css
+background-color: color-mix(in srgb, red 30%, blue);
+```
+
+You can even mix different color formats.
+
+```html
+text-mix-in-oklch--rgb-255-0-0-40--hsl-120-100-50
+```
+
+↓
+
+```css
+color: color-mix(
+  in oklch,
+  rgb(255,0,0) 40%,
+  hsl(120,100%,50%)
+);
+```
+
+If no color space is specified, **`srgb`** is used automatically.
+
+---
+
+# Supported Utility Prefixes
+
+| Prefix         | CSS Property                    |
+| -------------- | ------------------------------- |
+| `bg-`          | `background-color`              |
+| `text-`        | `color`                         |
+| `border-`      | `border-color`                  |
+| `outline-`     | `outline-color`                 |
+| `ring-`        | `--tw-ring-color`               |
+| `shadow-`      | `--tw-shadow-color`             |
+| `fill-`        | `fill`                          |
+| `stroke-`      | `stroke`                        |
+| `accent-`      | `accent-color`                  |
+| `caret-`       | `caret-color`                   |
+| `decoration-`  | `text-decoration-color`         |
+| `placeholder-` | `::placeholder`                 |
+| `divide-`      | `border-color` between siblings |
+| `from-`        | Gradient start                  |
+| `via-`         | Gradient middle                 |
+| `to-`          | Gradient end                    |
+
+---
+
+# Installation
+
+## npm
+
+```bash
+npm install tailwind-plugin-hexcolor
+```
+
+or
+
+```bash
+pnpm add -D tailwind-plugin-hexcolor
+```
+
+or
+
+```bash
+yarn add -D tailwind-plugin-hexcolor
+```
+
+---
+
+# Tailwind CSS v4
+
+```css
 @import "tailwindcss";
 
 @plugin "tailwind-plugin-hexcolor" {
@@ -85,55 +228,115 @@ Import the plugin directly into your input CSS file using the `@plugin` directiv
   inputCssPath: "./src/input.css";
 };
 ```
-*If you manually downloaded the file, point the plugin path to the local file:*
-```css
-@plugin "../plugins/index.js" {
-  srcDir: "./src";
-  cachePath: "./colors-cache.json";
-  inputCssPath: "./src/input.css";
+
+---
+
+# Tailwind CSS v3
+
+```js
+module.exports = {
+  content: ["./src/**/*.{html,js,jsx,ts,tsx,vue,svelte}"],
+
+  plugins: [
+    require("tailwind-plugin-hexcolor")({
+      srcDir: "./src",
+      cachePath: "./colors-cache.json",
+      inputCssPath: "./src/input.css",
+    }),
+  ],
 };
 ```
 
-### 2. In Tailwind CSS v3 (JS-First config)
-Register the plugin inside your `tailwind.config.js` file:
+---
 
-```javascript
-// tailwind.config.js
-module.exports = {
-  content: ["./src/**/*.{html,js,jsx,ts,tsx,vue,svelte}"],
-  plugins: [
-    require('tailwind-plugin-hexcolor')({
-      srcDir: "./src",
-      cachePath: "./colors-cache.json",
-      inputCssPath: "./src/input.css"
-    })
-  ]
-}
+# Configuration
+
+| Option         | Type     | Default               | Description                             |
+| -------------- | -------- | --------------------- | --------------------------------------- |
+| `srcDir`       | `string` | `./src`               | Directory to scan recursively           |
+| `cachePath`    | `string` | `./colors-cache.json` | Cache file location                     |
+| `inputCssPath` | `string` | `./src/input.css`     | Input CSS file used to trigger rebuilds |
+
+All options are optional.
+
+---
+
+# Supported File Types
+
+The plugin automatically scans:
+
+```
+html
+js
+jsx
+ts
+tsx
+vue
+svelte
+astro
+php
+blade.php
+twig
+erb
+liquid
+md
+mdx
 ```
 
----
-
-## Configuration Options
-
-You can pass the following optional parameters (as shown in the configuration examples above):
-
-| Option | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `srcDir` | `string` | `path.join(process.cwd(), "src")` | Directory to scan recursively for template files. |
-| `cachePath` | `string` | `path.join(process.cwd(), "colors-cache.json")` | Path where the extracted colors cache JSON file will be stored. |
-| `inputCssPath` | `string` | `path.join(process.cwd(), "src/input.css")` | Path to your input CSS file. Touched to trigger rebuilds on changes. |
+and many other common template files.
 
 ---
 
-## Under the Hood
+# How It Works
 
-1. **Scanning**: When you trigger a build or update a file, the plugin recursively crawls your `srcDir` directory, reading code files with valid extensions.
-2. **Regex Parsing**: It parses any class matching `(prefix)-([0-9a-fA-F]{3,8})` and checks them against a strict hexadecimal regex.
-3. **Caching**: Extracted color classes are grouped and written to a cache file (`colors-cache.json`). The cache prevents unnecessary compiler cycles.
-4. **Watcher**: A filesystem watcher listens for modifications to files in your template directory. When a file is modified, it runs a diff against the cache. If new colors are introduced or unused ones removed, it saves the cache and touches the input CSS file to trigger a Tailwind compiler run.
+1. Recursively scans your project.
+2. Finds matching color utility classes.
+3. Generates Tailwind utilities using `matchUtilities`.
+4. Stores results in a cache.
+5. Watches for file changes.
+6. Automatically rebuilds when colors change.
 
 ---
 
-## License
+# Why use this plugin?
 
-This project is licensed under the [MIT License](LICENSE).
+✅ Cleaner than arbitrary values
+
+```html
+bg-fff
+```
+
+instead of
+
+```html
+bg-[#fff]
+```
+
+✅ Supports every major CSS color format.
+
+✅ Zero manual configuration.
+
+✅ Fast incremental rebuilds.
+
+✅ Compatible with Tailwind CSS v3 & v4.
+
+---
+
+# License
+
+MIT License.
+
+---
+
+I would also recommend adding badges at the very top to make the README look more professional:
+
+```md
+# tailwind-plugin-hexcolor
+
+![npm](https://img.shields.io/npm/v/tailwind-plugin-hexcolor)
+![downloads](https://img.shields.io/npm/dm/tailwind-plugin-hexcolor)
+![license](https://img.shields.io/npm/l/tailwind-plugin-hexcolor)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-v3%20%7C%20v4-38BDF8)
+```
+
+This gives your README a polished, production-quality appearance similar to popular open-source Tailwind plugins.
