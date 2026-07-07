@@ -1,6 +1,4 @@
-This version is much more polished and follows the style used by popular GitHub packages (Tailwind CSS, DaisyUI, Flowbite, etc.). It's ready to use as a `README.md`.
-
-# tailwind-plugin-hexcolor
+# tailwindcss-hexcolor
 
 > A powerful Tailwind CSS plugin that enables arbitrary color utilities without square bracket syntax.
 
@@ -200,19 +198,19 @@ If no color space is specified, **`srgb`** is used automatically.
 ## npm
 
 ```bash
-npm install tailwind-plugin-hexcolor
+npm install tailwindcss-hexcolor
 ```
 
 or
 
 ```bash
-pnpm add -D tailwind-plugin-hexcolor
+pnpm add -D tailwindcss-hexcolor
 ```
 
 or
 
 ```bash
-yarn add -D tailwind-plugin-hexcolor
+yarn add -D tailwindcss-hexcolor
 ```
 
 ---
@@ -222,7 +220,7 @@ yarn add -D tailwind-plugin-hexcolor
 ```css
 @import "tailwindcss";
 
-@plugin "tailwind-plugin-hexcolor" {
+@plugin "tailwindcss-hexcolor" {
   srcDir: "./src";
   cachePath: "./colors-cache.json";
   inputCssPath: "./src/input.css";
@@ -238,7 +236,7 @@ module.exports = {
   content: ["./src/**/*.{html,js,jsx,ts,tsx,vue,svelte}"],
 
   plugins: [
-    require("tailwind-plugin-hexcolor")({
+    require("tailwindcss-hexcolor")({
       srcDir: "./src",
       cachePath: "./colors-cache.json",
       inputCssPath: "./src/input.css",
@@ -333,9 +331,9 @@ I would also recommend adding badges at the very top to make the README look mor
 ```md
 # tailwind-plugin-hexcolor
 
-![npm](https://img.shields.io/npm/v/tailwind-plugin-hexcolor)
-![downloads](https://img.shields.io/npm/dm/tailwind-plugin-hexcolor)
-![license](https://img.shields.io/npm/l/tailwind-plugin-hexcolor)
+![npm](https://img.shields.io/npm/v/tailwindcss-hexcolor)
+![downloads](https://img.shields.io/npm/dm/tailwindcss-hexcolor)
+![license](https://img.shields.io/npm/l/tailwindcss-hexcolor)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v3%20%7C%20v4-38BDF8)
 ```
 
