@@ -4,6 +4,72 @@ const plugin = require("tailwindcss/plugin");
 
 const HEX_REGEX = /^(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
+function parseAlpha(a) {
+  let val = a.replace(/_/g, ".");
+  if (/^\d+$/.test(val)) {
+    const num = parseFloat(val);
+    if (num > 1 && num <= 100) {
+      return `${num}%`;
+    }
+  }
+  return val;
+}
+
+function parseColorClass(value) {
+  // 1. HEX
+  if (HEX_REGEX.test(value)) {
+    return `#${value}`;
+  }
+
+  // 2. RGB
+  const rgbMatch = value.match(/^rgb(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})$/i);
+  if (rgbMatch) {
+    const r = parseInt(rgbMatch[1], 10);
+    const g = parseInt(rgbMatch[2], 10);
+    const b = parseInt(rgbMatch[3], 10);
+    if (r <= 255 && g <= 255 && b <= 255) {
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+  }
+
+  // 3. RGBA
+  const rgbaMatch = value.match(/^rgba(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9a-zA-Z._%]+)$/i);
+  if (rgbaMatch) {
+    const r = parseInt(rgbaMatch[1], 10);
+    const g = parseInt(rgbaMatch[2], 10);
+    const b = parseInt(rgbaMatch[3], 10);
+    const a = parseAlpha(rgbaMatch[4]);
+    if (r <= 255 && g <= 255 && b <= 255) {
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+  }
+
+  // 4. HSL
+  const hslMatch = value.match(/^hsl(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})$/i);
+  if (hslMatch) {
+    const h = parseInt(hslMatch[1], 10);
+    const s = parseInt(hslMatch[2], 10);
+    const l = parseInt(hslMatch[3], 10);
+    if (h <= 360 && s <= 100 && l <= 100) {
+      return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+  }
+
+  // 5. HSLA
+  const hslaMatch = value.match(/^hsla(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9]{1,3})(?:-|_)([0-9a-zA-Z._%]+)$/i);
+  if (hslaMatch) {
+    const h = parseInt(hslaMatch[1], 10);
+    const s = parseInt(hslaMatch[2], 10);
+    const l = parseInt(hslaMatch[3], 10);
+    const a = parseAlpha(hslaMatch[4]);
+    if (h <= 360 && s <= 100 && l <= 100) {
+      return `hsla(${h}, ${s}%, ${l}%, ${a})`;
+    }
+  }
+
+  return null;
+}
+
 const PREFIXES = [
   "bg",
   "text",
@@ -77,7 +143,7 @@ function extractHexColorsByType(srcDir) {
   });
   const files = getFilesRecursively(srcDir);
   
-  const classRegex = new RegExp(`(${PREFIXES.join("|")})-([0-9a-fA-F]{3,8})\\b`, "g");
+  const classRegex = new RegExp(`(${PREFIXES.join("|")})-([0-9a-fA-F]{3,8}|(?:rgb|rgba|hsl|hsla)(?:-|_)[0-9a-zA-Z._%-]+)\\b`, "g");
 
   files.forEach((file) => {
     if (hasValidExtension(file)) {
@@ -87,7 +153,7 @@ function extractHexColorsByType(srcDir) {
       while ((match = classRegex.exec(content)) !== null) {
         const type = match[1];
         const value = match[2];
-        if (HEX_REGEX.test(value)) {
+        if (parseColorClass(value) !== null) {
           result[type].add(value);
         }
       }
@@ -274,23 +340,27 @@ module.exports = plugin.withOptions(
 
       Object.entries(prefixBuilders).forEach(([prefix, builder]) => {
         const values = {};
-        (foundColors[prefix] || []).forEach((color) => {
-          values[color] = `#${color}`;
+        (foundColors[prefix] || []).forEach((colorClass) => {
+          const parsedColor = parseColorClass(colorClass);
+          if (parsedColor) {
+            values[colorClass] = parsedColor;
+          }
         });
 
         matchUtilities(
           {
             [prefix]: (value) => {
-              let hex = value;
-              if (!hex.startsWith("#") && HEX_REGEX.test(hex)) {
-                hex = `#${hex}`;
+              let colorVal = value;
+              if (!colorVal.startsWith("#") && HEX_REGEX.test(colorVal)) {
+                colorVal = `#${colorVal}`;
+              } else {
+                const parsed = parseColorClass(colorVal);
+                if (parsed) {
+                  colorVal = parsed;
+                }
               }
 
-              if (!hex.startsWith("#")) {
-                return {};
-              }
-
-              return builder(hex);
+              return builder(colorVal);
             },
           },
           {
