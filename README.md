@@ -10,33 +10,13 @@ Supports **HEX**, **RGB**, **RGBA**, **HSL**, **HSLA**, and **CSS `color-mix()`*
 
 <p>
 
-<a href="https://www.npmjs.com/package/tailwindcss-hexcolor">
-<img src="https://img.shields.io/npm/v/tailwindcss-hexcolor?style=for-the-badge&logo=npm" alt="NPM Version">
-</a>
-
-<a href="https://www.npmjs.com/package/tailwindcss-hexcolor">
-<img src="https://img.shields.io/npm/dm/tailwindcss-hexcolor?style=for-the-badge&logo=npm" alt="Downloads">
-</a>
-
-<a href="LICENSE">
-<img src="https://img.shields.io/npm/l/tailwindcss-hexcolor?style=for-the-badge" alt="License">
-</a>
-
-<a href="https://tailwindcss.com">
-<img src="https://img.shields.io/badge/Tailwind-v3%20%26%20v4-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
-</a>
-
-<a href="https://github.com/SnehMoradia/tailwindcss-hexcolor/stargazers">
-<img src="https://img.shields.io/github/stars/SnehMoradia/tailwindcss-hexcolor?style=for-the-badge" alt="GitHub Stars">
-</a>
-
-<a href="https://github.com/SnehMoradia/tailwindcss-hexcolor/network/members">
-<img src="https://img.shields.io/github/forks/SnehMoradia/tailwindcss-hexcolor?style=for-the-badge" alt="Forks">
-</a>
-
-<a href="https://github.com/SnehMoradia/tailwindcss-hexcolor/issues">
-<img src="https://img.shields.io/github/issues/SnehMoradia/tailwindcss-hexcolor?style=for-the-badge" alt="Issues">
-</a>
+[![NPM Version](https://img.shields.io/npm/v/tailwindcss-hexcolor?style=flat-square&logo=npm)](https://www.npmjs.com/package/tailwindcss-hexcolor)
+[![NPM Downloads](https://img.shields.io/npm/dm/tailwindcss-hexcolor?style=flat-square&logo=npm)](https://www.npmjs.com/package/tailwindcss-hexcolor)
+[![License](https://img.shields.io/npm/l/tailwindcss-hexcolor?style=flat-square)](LICENSE)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v3%20%26%20v4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![GitHub Stars](https://img.shields.io/github/stars/SnehMoradia/tailwindcss-hexcolor?style=flat-square)](https://github.com/SnehMoradia/tailwindcss-hexcolor/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/SnehMoradia/tailwindcss-hexcolor?style=flat-square)](https://github.com/SnehMoradia/tailwindcss-hexcolor/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/SnehMoradia/tailwindcss-hexcolor?style=flat-square)](https://github.com/SnehMoradia/tailwindcss-hexcolor/issues)
 
 </p>
 
