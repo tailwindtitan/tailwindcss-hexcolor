@@ -9,7 +9,7 @@ Supports **HEX**, **RGB**, **RGBA**, **HSL**, **HSLA**, and **CSS `color-mix()`*
 <p align="center">
 
 [![NPM Version](https://img.shields.io/npm/v/tailwindcss-hexcolor?style=flat-square&logo=npm)](https://www.npmjs.com/package/tailwindcss-hexcolor)
-[![NPM Downloads](https://img.shields.io/npm/dm/tailwindcss-hexcolor?style=flat-square&logo=npm)](https://www.npmjs.com/package/tailwindcss-hexcolor)
+[![NPM Downloads](https://img.shields.io/npm/dt/tailwindcss-hexcolor?style=flat-square&logo=npm)](https://www.npmjs.com/package/tailwindcss-hexcolor)
 [![License](https://img.shields.io/npm/l/tailwindcss-hexcolor?style=flat-square)](LICENSE)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v3%20%26%20v4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![GitHub Stars](https://img.shields.io/github/stars/SnehMoradia/tailwindcss-hexcolor?style=flat-square)](https://github.com/SnehMoradia/tailwindcss-hexcolor/stargazers)
